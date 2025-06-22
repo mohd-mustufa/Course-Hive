@@ -5,6 +5,7 @@ import fileUpload from "express-fileupload";
 import { v2 as cloudinary } from "cloudinary";
 
 import courseRoute from "./routes/course.route.js";
+import userRoute from "./routes/user.route.js";
 
 const app = express();
 dotenv.config();
@@ -39,6 +40,7 @@ cloudinary.config({
 
 // Defining Routes
 app.use("/api/v1/courses", courseRoute);
+app.use("/api/v1/users", userRoute);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
