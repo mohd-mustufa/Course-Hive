@@ -38,7 +38,7 @@ cloudinary.config({
 });
 
 // Defining Routes
-app.use("/api/v1/course", courseRoute);
+app.use("/api/v1/courses", courseRoute);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

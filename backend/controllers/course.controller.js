@@ -1,6 +1,34 @@
 import { Course } from "../models/course.model.js";
 import { v2 as cloudinary } from "cloudinary";
 
+
+export const getAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find({});
+    res.status(201).json({ courses });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Error finding courses" });
+  }
+};
+
+export const getCourse = async (req, res) => {
+  const { courseId } = req.params;
+  console.log(courseId);
+
+  try {
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+    res.status(201).json({ course });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Error getting course" });
+  }
+};
+
 export const createCourse = async (req, res) => {
   const { title, description, price } = req.body;
   const allowedMimeTypes = ["image/png", "image/jpg", "image/jpeg"];
@@ -49,5 +77,40 @@ export const createCourse = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Error creating course" });
+  }
+};
+
+export const updateCourse = async (req, res) => {
+  const { courseId } = req.params;
+  const { title, description, price, image } = req.body;
+
+  try {
+    const course = await Course.updateOne(
+      { _id: courseId },
+      {
+        title,
+        description,
+        price,
+        image,
+      }
+    );
+    res.status(201).json({ message: "Course updated succesfully", course });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Error while updating course" });
+  }
+};
+
+export const deleteCourse = async (req, res) => {
+  const { courseId } = req.params;
+  try {
+    const course = await Course.findOneAndDelete({ _id: courseId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+    res.status(201).json({ message: "Course deleted successfully", course });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Error while deleting course" });
   }
 };
