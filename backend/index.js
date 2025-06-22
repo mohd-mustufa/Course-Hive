@@ -1,25 +1,26 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import mongoose from 'mongoose'
+import express from "express";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 
-const app = express()
-dotenv.config()
+import courseRoute from './routes/course.route.js'
 
-const port = process.env.PORT || 3000
-const DB_URI = process.env.MONGO_URI
+const app = express();
+dotenv.config();
+
+const port = process.env.PORT || 3000;
+const DB_URI = process.env.MONGO_URI;
 
 try {
-    await mongoose.connect(DB_URI)
-    console.log('Connected to MongoDB')
+  await mongoose.connect(DB_URI);
+  console.log("Connected to MongoDB");
 } catch (error) {
-    console.log(error)
+  console.log(error);
 }
 
+// Defining Routes
+app.use('/api/v1/course', courseRoute)
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
-})
+  console.log(`Server is running on port ${port}`);
+});
