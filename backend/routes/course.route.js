@@ -7,7 +7,7 @@ import {
   deleteCourse,
   purchaseCourse,
 } from "../controllers/course.controller.js";
-import authMiddleware from "../middleware/auth.middleware.js";
+import authMiddleware from "../middleware/user.middleware.js";
 
 const router = express.Router();
 
