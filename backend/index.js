@@ -2,16 +2,19 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import fileUpload from "express-fileupload";
+import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from "cloudinary";
 
 import courseRoute from "./routes/course.route.js";
 import userRoute from "./routes/user.route.js";
+import adminRoute from "./routes/admin.route.js";
 
 const app = express();
 dotenv.config();
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 app.use(
   fileUpload({
     useTempFiles: true,
@@ -39,8 +42,8 @@ cloudinary.config({
 });
 
 // Defining Routes
-app.use("/api/v1/courses", courseRoute);
-app.use("/api/v1/users", userRoute);
+app.use("/api/v1/course", courseRoute);
+app.use("/api/v1/user", userRoute);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
