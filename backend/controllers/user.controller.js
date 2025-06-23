@@ -68,8 +68,16 @@ export const login = async (req, res) => {
     }
 
     // Create jwt token and store in cookies
-    const token = jwt.sign({ id: user._id }, process.env.JWT_USER_PASSWORD);
-    res.cookie("jwt", token);
+    const token = jwt.sign({ id: user._id }, process.env.JWT_USER_PASSWORD, {
+      expiresIn: "1d",
+    });
+    const cookieOptions = {
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // true for https only
+      sameSite: "Strict",
+    };
+    res.cookie("jwt", token, cookieOptions);
 
     return res.status(201).json({ message: "Login successful", user, token });
   } catch (err) {
