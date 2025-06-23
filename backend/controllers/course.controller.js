@@ -1,6 +1,6 @@
 import { Course } from "../models/course.model.js";
+import { Purchase } from "../models/purchase.model.js";
 import { v2 as cloudinary } from "cloudinary";
-
 
 export const getAllCourses = async (req, res) => {
   try {
@@ -14,7 +14,6 @@ export const getAllCourses = async (req, res) => {
 
 export const getCourse = async (req, res) => {
   const { courseId } = req.params;
-  console.log(courseId);
 
   try {
     const course = await Course.findById(courseId);
@@ -74,8 +73,8 @@ export const createCourse = async (req, res) => {
       message: "Course created succesfully",
       course,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.log(err);
     res.status(500).json({ error: "Error creating course" });
   }
 };
@@ -112,5 +111,36 @@ export const deleteCourse = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Error while deleting course" });
+  }
+};
+
+export const purchaseCourse = async (req, res) => {
+  const { userId } = req;
+  const { courseId } = req.body;
+
+  try {
+    // Check if course exists
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    // Check if course is already purchased
+    const existingPurchase = await Purchase.findOne({ userId, courseId });
+    if (existingPurchase) {
+      return res
+        .status(400)
+        .json({ error: "User has already purchased this course" });
+    }
+
+    // Create new purchase
+    const newPurchase = new Purchase({ userId, courseId });
+    await newPurchase.save();
+    res
+      .status(201)
+      .json({ message: "Course purchased successfully", newPurchase });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Unexpected error while buying course" });
   }
 };

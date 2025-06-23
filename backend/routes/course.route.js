@@ -5,7 +5,9 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
+  purchaseCourse,
 } from "../controllers/course.controller.js";
+import authMiddleware from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -14,5 +16,7 @@ router.post("/", createCourse);
 router.get("/:courseId", getCourse);
 router.put("/:courseId", updateCourse);
 router.delete("/:courseId", deleteCourse);
+
+router.post("/purchase", authMiddleware, purchaseCourse);
 
 export default router;

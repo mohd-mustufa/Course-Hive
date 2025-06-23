@@ -2,7 +2,8 @@ import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+import { Purchase } from "../models/purchase.model.js";
+import { Course } from "../models/course.model.js";
 
 export const signup = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
@@ -93,5 +94,23 @@ export const logout = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Error occurred during logout" });
+  }
+};
+
+export const purchases = async (req, res) => {
+  const userId = req.userId;
+
+  try {
+    const purchases = await Purchase.find({ userId });
+    const purchasedCourseIds = purchases.map((p) => p.courseId);
+
+    const courses = await Course.find({
+      _id: { $in: purchasedCourseIds },
+    });
+
+    res.status(200).json({ purchases, courses });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Error fetching purchased courses" });
   }
 };
