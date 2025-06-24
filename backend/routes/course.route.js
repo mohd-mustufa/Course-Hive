@@ -8,14 +8,15 @@ import {
   purchaseCourse,
 } from "../controllers/course.controller.js";
 import userMiddleware from "../middleware/user.middleware.js";
+import adminMiddleware from "../middleware/admin.middleware.js";
 
 const router = express.Router();
 
 router.get("/", getAllCourses);
-router.post("/", createCourse);
+router.post("/", adminMiddleware, createCourse);
 router.get("/:courseId", getCourse);
-router.put("/:courseId", updateCourse);
-router.delete("/:courseId", deleteCourse);
+router.put("/:courseId", adminMiddleware, updateCourse);
+router.delete("/:courseId", adminMiddleware, deleteCourse);
 
 router.post("/purchase", userMiddleware, purchaseCourse);
 

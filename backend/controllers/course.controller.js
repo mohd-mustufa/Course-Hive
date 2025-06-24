@@ -29,6 +29,7 @@ export const getCourse = async (req, res) => {
 };
 
 export const createCourse = async (req, res) => {
+  const adminId = req.adminId;
   const { title, description, price } = req.body;
   const allowedMimeTypes = ["image/png", "image/jpg", "image/jpeg"];
 
@@ -67,6 +68,7 @@ export const createCourse = async (req, res) => {
         public_id: cloudinary_response.public_id,
         url: cloudinary_response.url,
       },
+      creatorId: adminId,
     };
     const course = await Course.create(courseData);
     res.json({
@@ -80,6 +82,7 @@ export const createCourse = async (req, res) => {
 };
 
 export const updateCourse = async (req, res) => {
+  const adminId = req.adminId;
   const { courseId } = req.params;
   const { title, description, price, image } = req.body;
 
@@ -89,7 +92,7 @@ export const updateCourse = async (req, res) => {
       return res.status(404).json({ error: "Course not found" });
     }
     const course = await Course.updateOne(
-      { _id: courseId },
+      { _id: courseId, creatorId: adminId },
       {
         title,
         description,
@@ -105,9 +108,13 @@ export const updateCourse = async (req, res) => {
 };
 
 export const deleteCourse = async (req, res) => {
+  const adminId = req.adminId;
   const { courseId } = req.params;
   try {
-    const course = await Course.findOneAndDelete({ _id: courseId });
+    const course = await Course.findOneAndDelete({
+      _id: courseId,
+      creatorId: adminId,
+    });
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
     }

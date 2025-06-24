@@ -23,6 +23,10 @@ const courseSchema = new mongoose.Schema({
       reuired: true,
     },
   },
+  creatorId: {
+    type: mongoose.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 export const Course = mongoose.model("Course", courseSchema);
