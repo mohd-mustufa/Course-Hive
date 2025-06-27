@@ -5,7 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 export const getAllCourses = async (req, res) => {
   try {
     const courses = await Course.find({});
-    res.status(201).json({ courses });
+    res.status(200).json({ courses });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Error finding courses" });
@@ -21,7 +21,7 @@ export const getCourse = async (req, res) => {
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
     }
-    res.status(201).json({ course });
+    res.status(200).json({ course });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Error getting course" });
@@ -71,7 +71,7 @@ export const createCourse = async (req, res) => {
       creatorId: adminId,
     };
     const course = await Course.create(courseData);
-    res.json({
+    res.status(201).json({
       message: "Course created succesfully",
       course,
     });
@@ -100,7 +100,7 @@ export const updateCourse = async (req, res) => {
         image,
       }
     );
-    res.status(201).json({ message: "Course updated succesfully", course });
+    res.status(200).json({ message: "Course updated succesfully", course });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Error while updating course" });
@@ -118,7 +118,7 @@ export const deleteCourse = async (req, res) => {
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
     }
-    res.status(201).json({ message: "Course deleted successfully", course });
+    res.status(200).json({ message: "Course deleted successfully", course });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Error while deleting course" });

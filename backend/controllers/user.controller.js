@@ -80,7 +80,7 @@ export const login = async (req, res) => {
     };
     res.cookie("jwt", token, cookieOptions);
 
-    return res.status(201).json({ message: "Login successful", user, token });
+    return res.status(200).json({ message: "Login successful", user, token });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Could not login" });

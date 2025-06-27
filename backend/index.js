@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from "cloudinary";
-
+import cors from "cors";
 import courseRoute from "./routes/course.route.js";
 import userRoute from "./routes/user.route.js";
 import adminRoute from "./routes/admin.route.js";
@@ -19,6 +19,14 @@ app.use(
   fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp/",
+  })
+);
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
