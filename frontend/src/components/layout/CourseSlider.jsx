@@ -11,7 +11,7 @@ function CourseSlider() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get(BASE_URL + GET_ALL_COURSES_URL, {
+        const response = await axios.get(`${BASE_URL}${GET_ALL_COURSES_URL}`, {
           withCredentials: true,
         });
         setCourses(response?.data?.courses || []);
