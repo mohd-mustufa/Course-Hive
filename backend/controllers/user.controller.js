@@ -72,6 +72,7 @@ export const login = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_USER_PASSWORD, {
       expiresIn: "1d",
     });
+    
     const cookieOptions = {
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
       httpOnly: true,
@@ -83,7 +84,7 @@ export const login = async (req, res) => {
     return res.status(200).json({ message: "Login successful", user, token });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "Could not login" });
+    res.status(500).json({ error: "Could not login!" });
   }
 };
 

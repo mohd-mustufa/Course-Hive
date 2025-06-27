@@ -1,10 +1,38 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../../../public/logo.png";
 import { Link, useLocation } from "react-router-dom";
+import { BASE_URL, LOGOUT_URL } from "../../utils/constants";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 function Header() {
   const location = useLocation();
   const currentPath = location.pathname;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // token
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
+
+  // logout
+  const handleLogout = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}${LOGOUT_URL}`, {
+        withCredentials: true,
+      });
+      toast.success(response.data?.message);
+      localStorage.removeItem("user");
+      setIsLoggedIn(false);
+    } catch (error) {
+      toast.error(error.response.data.error || "Error logging out");
+    }
+  };
 
   return (
     <div className="flex justify-between items-center p-6">
@@ -14,21 +42,32 @@ function Header() {
       </Link>
 
       <div className="space-x-4">
-        {currentPath !== "/login" && (
-          <Link
-            to={"/login"}
-            className="bg-transparent text-white py-2 px-4 border-white border-1 rounded cursor-pointer hover:text-white hover:bg-orange-500 hover:border-none duration-300"
+        {isLoggedIn ? (
+          <button
+            onClick={handleLogout}
+            className="bg-transparent text-white py-2 px-4 border-white border rounded cursor-pointer hover:text-white hover:bg-orange-500 hover:border-none duration-300"
           >
-            Login
-          </Link>
-        )}
-        {currentPath !== "/signup" && (
-          <Link
-            to={"/signup"}
-            className="bg-transparent text-white py-2 px-4 border-white border-1 rounded cursor-pointer hover:text-white hover:bg-orange-500 hover:border-none duration-300"
-          >
-            Signup
-          </Link>
+            Logout
+          </button>
+        ) : (
+          <>
+            {currentPath !== "/login" && (
+              <Link
+                to="/login"
+                className="bg-transparent text-white py-2 px-4 border-white border rounded cursor-pointer hover:text-white hover:bg-orange-500 hover:border-none duration-300"
+              >
+                Login
+              </Link>
+            )}
+            {currentPath !== "/signup" && (
+              <Link
+                to="/signup"
+                className="bg-transparent text-white py-2 px-4 border-white border rounded cursor-pointer hover:text-white hover:bg-orange-500 hover:border-none duration-300"
+              >
+                Signup
+              </Link>
+            )}
+          </>
         )}
       </div>
     </div>

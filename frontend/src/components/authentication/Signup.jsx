@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL, SIGNUP_URL } from "../../utils/constants";
 import Header from "../layout/Header";
+import toast from "react-hot-toast";
 
 function Signup() {
   const [firstName, setFirstName] = useState("");
@@ -32,7 +33,7 @@ function Signup() {
           },
         }
       );
-      alert(response.data.message);
+      toast.success(response.data.message);
       navigate("/login");
     } catch (error) {
       if (error?.response?.data?.error) {
@@ -45,7 +46,6 @@ function Signup() {
     <div className="bg-gradient-to-r from-black to-blue-950 min-h-screen text-white">
       <Header />
 
-      {/* Signup Form centered */}
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-4">
         <div className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md">
           <h2 className="text-2xl font-bold mb-4 text-center">
