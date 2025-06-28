@@ -57,12 +57,23 @@ function AllCourses() {
             All Courses
           </h1>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {loading
-              ? renderShimmer()
-              : courses.map((course) => (
+
+          <div className="min-h-[300px] mt-6">
+            {loading ? (
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {renderShimmer()}
+              </div>
+            ) : courses.length === 0 ? (
+              <p className="text-center text-gray-300 text-lg">
+                No courses available.
+              </p>
+            ) : (
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {courses.map((course) => (
                   <CourseCard key={course._id} course={course} />
                 ))}
+              </div>
+            )}
           </div>
         </main>
 
