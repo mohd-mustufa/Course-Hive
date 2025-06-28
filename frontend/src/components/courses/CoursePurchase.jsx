@@ -62,6 +62,7 @@ function CoursePurchase() {
     } catch (error) {
       if (error.response.status === 400) {
         toast.error("You have already purchased this course!");
+        navigate("/my-courses");
       } else {
         toast.error(error?.response?.data?.error);
       }
