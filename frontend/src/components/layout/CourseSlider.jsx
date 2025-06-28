@@ -73,7 +73,7 @@ function CourseSlider() {
                 <h2 className="text-lg font-semibold text-white">
                   {course.title}
                 </h2>
-                <button className="mt-4 bg-orange-500 text-white py-2 px-4 rounded-full hover:bg-blue-500 transition">
+                <button className="mt-4 bg-orange-500 text-white py-2 px-4 rounded-full hover:bg-blue-500 transition cursor-pointer">
                   Enroll Now
                 </button>
               </div>
