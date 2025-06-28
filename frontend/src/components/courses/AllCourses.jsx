@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BASE_URL, GET_ALL_COURSES_URL } from "../../utils/constants";
+import {
+  BASE_URL,
+  GET_ALL_COURSES_URL,
+  GET_MY_COURSES_URL,
+} from "../../utils/constants";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import CourseCard from "./CourseCard";
@@ -9,6 +13,7 @@ import CourseSidebar from "./CourseSidebar";
 function AllCourses() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [myCourses, setMyCourses] = useState([]);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -24,6 +29,33 @@ function AllCourses() {
       }
     };
     fetchCourses();
+  }, []);
+
+  // TODO: Reuse from MyCourses
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user?.token) {
+      return;
+    }
+
+    // Fetch purchased courses
+    const fetchMyCourses = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}${GET_MY_COURSES_URL}`, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+          withCredentials: true,
+        });
+        setMyCourses(response.data.courses || []);
+      } catch (error) {
+        console.error("Failed to fetch courses:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMyCourses();
   }, []);
 
   const renderShimmer = () => {
@@ -57,7 +89,6 @@ function AllCourses() {
             All Courses
           </h1>
 
-
           <div className="min-h-[300px] mt-6">
             {loading ? (
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -70,7 +101,11 @@ function AllCourses() {
             ) : (
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {courses.map((course) => (
-                  <CourseCard key={course._id} course={course} />
+                  <CourseCard
+                    key={course._id}
+                    course={course}
+                    isPurchased={myCourses.some((c) => c._id === course._id)}
+                  />
                 ))}
               </div>
             )}

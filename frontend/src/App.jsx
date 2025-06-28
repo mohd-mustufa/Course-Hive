@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import AllCourses from "./components/courses/AllCourses";
 import CoursePurchase from "./components/courses/CoursePurchase";
 import MyCourses from "./components/courses/MyCourses";
+import CourseDetail from "./components/courses/CourseDetail";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/courses" element={<AllCourses />} />
         <Route path="/purchase/:courseId" element={<CoursePurchase />} />
         <Route path="/my-courses" element={<MyCourses />} />
+        <Route path="/courses/:courseId" element={<CourseDetail />} />
       </Routes>
       <Toaster />
     </div>

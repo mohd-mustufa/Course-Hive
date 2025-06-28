@@ -25,6 +25,7 @@ function CourseSidebar() {
       toast.success(response.data?.message);
       localStorage.removeItem("user");
       setIsLoggedIn(false);
+      window.location.reload();
     } catch (error) {
       toast.error(error.response.data.error || "Error logging out");
     }
