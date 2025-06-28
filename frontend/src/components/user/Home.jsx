@@ -7,7 +7,7 @@ import CourseSlider from "../layout/CourseSlider";
 function Home() {
   return (
     <div className="bg-gradient-to-r from-black to-blue-900">
-      <div className="h-screen text-white container mx-auto">
+      <div className="min-h-screen text-white container mx-auto">
         <Header />
 
         <div className="flex-grow">
