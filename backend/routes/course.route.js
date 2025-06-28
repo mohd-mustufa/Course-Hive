@@ -6,6 +6,7 @@ import {
   updateCourse,
   deleteCourse,
   purchaseCourse,
+  getClientSecret,
 } from "../controllers/course.controller.js";
 import userMiddleware from "../middleware/user.middleware.js";
 import adminMiddleware from "../middleware/admin.middleware.js";
@@ -19,5 +20,6 @@ router.put("/:courseId", adminMiddleware, updateCourse);
 router.delete("/:courseId", adminMiddleware, deleteCourse);
 
 router.post("/purchase", userMiddleware, purchaseCourse);
+router.post("/purchase/client-secret", userMiddleware, getClientSecret);
 
 export default router;

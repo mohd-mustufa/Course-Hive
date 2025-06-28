@@ -1,6 +1,7 @@
 import { Course } from "../models/course.model.js";
 import { Purchase } from "../models/purchase.model.js";
 import { v2 as cloudinary } from "cloudinary";
+import Stripe from "stripe";
 
 export const getAllCourses = async (req, res) => {
   try {
@@ -147,11 +148,54 @@ export const purchaseCourse = async (req, res) => {
     // Create new purchase
     const newPurchase = new Purchase({ userId, courseId });
     await newPurchase.save();
-    res
-      .status(201)
-      .json({ message: "Course purchased successfully", newPurchase });
+    res.status(201).json({
+      message: "Course purchased successfully",
+      course,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Unexpected error while buying course" });
+  }
+};
+
+export const getClientSecret = async (req, res) => {
+  const { userId } = req;
+  const { courseId } = req.body;
+
+  try {
+    // Check if course exists
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    // Check if course is already purchased
+    const existingPurchase = await Purchase.findOne({ userId, courseId });
+    if (existingPurchase) {
+      return res
+        .status(400)
+        .json({ error: "User has already purchased this course" });
+    }
+
+    // Stripe payment
+    // Create a PaymentIntent to get clientSecret
+    const amount = course.price * 100;
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: "usd",
+      payment_method_types: ["card"],
+    });
+
+    res.status(201).json({
+      message: "Payment Intent Created",
+      course,
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ error: "Unexpected error while Creating payment intent" });
   }
 };
