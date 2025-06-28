@@ -30,7 +30,7 @@ function MyCourses() {
           withCredentials: true,
         });
         setCourses(response.data.courses || []);
-      } catch (error) {
+      } catch (err) {
         console.error("Failed to fetch courses:", err);
       } finally {
         setLoading(false);

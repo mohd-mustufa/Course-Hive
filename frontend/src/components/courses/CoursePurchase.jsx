@@ -4,7 +4,7 @@ import axios from "axios";
 import {
   BASE_URL,
   GET_CLIENT_SECRET_URL,
-  PURCHASE_COURSE_URL,
+  CREATE_ORDER_URL,
 } from "../../utils/constants";
 import Header from "../layout/Header";
 import toast from "react-hot-toast";
@@ -91,7 +91,7 @@ function CoursePurchase() {
         payment_method: {
           card: card,
           billing_details: {
-            name: user?.user?.firstName || "Student",
+            name: user?.user?.firstName,
             email: user?.user?.email,
           },
         },
@@ -104,20 +104,29 @@ function CoursePurchase() {
     }
 
     if (paymentIntent.status === "succeeded") {
-      try {
-        await axios.post(
-          `${BASE_URL}${PURCHASE_COURSE_URL}`,
-          { courseId },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          }
-        );
-        toast.success("Payment Successful!");
-        navigate("/my-courses");
-      } catch (error) {
-        toast.error("Payment succeeded but failed to enroll in course.");
-      }
+      const paymentInfo = {
+        email: user?.user?.email,
+        userId: user.user._id,
+        courseId: courseId,
+        paymentId: paymentIntent.id,
+        amount: paymentIntent.amount / 100,
+        status: paymentIntent.status,
+      };
+
+      await axios
+        .post(`${BASE_URL}${CREATE_ORDER_URL}`, paymentInfo, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Error while creating order");
+        });
+      toast.success("Payment Successful!");
+      navigate("/my-courses");
     }
 
     setPaymentLoading(false);
