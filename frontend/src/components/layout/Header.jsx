@@ -36,10 +36,18 @@ function Header() {
 
   return (
     <div className="flex justify-between items-center p-6">
-      <Link to="/" className="flex items-center space-x-2">
-        <img src={logo} alt="CourseHive" className="w-10 h-10 rounded-full" />
-        <h1 className="text-2xl text-orange-500 font-bold">CourseHive</h1>
-      </Link>
+      <div>
+        {currentPath !== "/courses" && (
+          <Link to="/" className="flex items-center space-x-2">
+            <img
+              src={logo}
+              alt="CourseHive"
+              className="w-10 h-10 rounded-full"
+            />
+            <h1 className="text-2xl text-orange-500 font-bold">CourseHive</h1>
+          </Link>
+        )}
+      </div>
 
       <div className="space-x-4">
         {isLoggedIn ? (
