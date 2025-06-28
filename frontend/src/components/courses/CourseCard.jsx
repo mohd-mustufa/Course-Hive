@@ -35,7 +35,7 @@ function CourseCard({ course }) {
           <span className="text-green-400">{discountPercent}% off</span>
         </div>
         <Link
-          to={`/purchase/${course._id}`}
+          to={`/purchase/${course._id}?originalPrice=${originalPrice}&discount=${discountPercent}`}
           className="block w-full text-center bg-orange-500 hover:bg-blue-700 text-white py-2 rounded transition duration-300"
         >
           Buy Now
