@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import logo from "../../../public/logo.png";
 import { Link, useLocation } from "react-router-dom";
 import { BASE_URL, LOGOUT_URL } from "../../utils/constants";
 import toast from "react-hot-toast";
@@ -41,7 +40,7 @@ function Header() {
         {currentPath !== "/courses" && (
           <Link to="/" className="flex items-center space-x-2">
             <img
-              src={logo}
+              src="/logo.png"
               alt="CourseHive"
               className="w-10 h-10 rounded-full"
             />

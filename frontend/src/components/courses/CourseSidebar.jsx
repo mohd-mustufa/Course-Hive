@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { RiHome2Fill } from "react-icons/ri";
 import { FaDiscourse, FaDownload } from "react-icons/fa";
 import { IoLogOut, IoLogIn } from "react-icons/io5";
-import logo from "../../../public/logo.png";
 import axios from "axios";
 import { BASE_URL, LOGOUT_URL } from "../../utils/constants";
 import toast from "react-hot-toast";
@@ -39,7 +38,7 @@ function CourseSidebar() {
   return (
     <aside className="hidden md:block w-64 h-screen fixed top-0 left-0 bg-gray-900 text-white p-6">
       <div className="flex items-center space-x-3 mb-10">
-        <img src={logo} alt="Profile" className="h-10 w-10 rounded-full" />
+        <img src="/logo.png" alt="Profile" className="h-10 w-10 rounded-full" />
         <h2 className="text-lg font-bold text-orange-500">CourseHive</h2>
       </div>
       <nav>

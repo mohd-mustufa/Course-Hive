@@ -1,5 +1,4 @@
 import React from "react";
-import logo from "../../../public/logo.png";
 import {
   FaFacebook,
   FaInstagram,
@@ -18,7 +17,7 @@ function Footer() {
         <div className="flex flex-col items-center md:items-start">
           <div className="flex items-center space-x-2">
             <img
-              src={logo}
+              src="/logo.png"
               alt="CourseHive"
               className="w-10 h-10 rounded-full"
             />
