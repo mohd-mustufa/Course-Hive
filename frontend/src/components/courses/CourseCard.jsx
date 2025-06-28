@@ -54,9 +54,14 @@ function CourseCard({ course, isPurchased = false }) {
             View Course
           </Link>
         ) : (
-          <div className="mt-6 text-center text-green-400 font-semibold">
-            ✅ Already Purchased
-          </div>
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-xl font-bold">${course.price}</span>
+            </div>
+            <div className="mt-6 text-center text-green-400 font-semibold">
+              ✅ Already Purchased
+            </div>
+          </>
         )}
       </div>
     </div>
