@@ -28,6 +28,7 @@ function CourseCard({ course, isPurchased = false }) {
             ? `${course.description.slice(0, 100)}...`
             : course.description}
         </p>
+        
         {!isPurchased ? (
           <>
             <div className="flex justify-between items-center mb-4">
@@ -51,7 +52,7 @@ function CourseCard({ course, isPurchased = false }) {
             to={`/courses/${course._id}`}
             className="block w-full text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded transition duration-300 mt-6"
           >
-            View Course
+            Course Details
           </Link>
         ) : (
           <>
