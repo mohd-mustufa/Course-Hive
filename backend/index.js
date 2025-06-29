@@ -10,6 +10,7 @@ import courseDetailRoute from "./routes/courseDetail.route.js";
 import userRoute from "./routes/user.route.js";
 import adminRoute from "./routes/admin.route.js";
 import orderRoute from "./routes/order.route.js";
+import aiRoute from "./routes/ai.route.js";
 
 const app = express();
 dotenv.config();
@@ -57,6 +58,7 @@ app.use("/api/v1/course-details", courseDetailRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/admin", adminRoute);
 app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/ai", aiRoute);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
