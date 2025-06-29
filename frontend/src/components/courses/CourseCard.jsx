@@ -15,7 +15,7 @@ function CourseCard({ course, isPurchased = false }) {
   return (
     <div className="bg-gray-900 text-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       <img
-        src={course.image.url}
+        src={course?.image?.url}
         alt={course.title}
         className="h-45 w-full object-contain bg-gray-800"
       />
