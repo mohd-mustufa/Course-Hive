@@ -33,14 +33,15 @@ function Login() {
       );
       toast.success(response.data.message);
       
-      // Navigate based on role
+      // Set localStorage and navigate to respective routes
       if (isAdmin) {
         localStorage.setItem("admin", JSON.stringify(response.data));
-        navigate("/admin");
       } else {
         localStorage.setItem("user", JSON.stringify(response.data));
-        navigate("/");
       }
+      
+      // Reload the page - route protection will handle the redirect
+      window.location.reload();
     } catch (error) {
       if (error?.response?.data?.error) {
         setErrorMessage(error?.response?.data?.error || "Login failed!!!");
