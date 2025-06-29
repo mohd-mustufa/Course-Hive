@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL, LOGIN_URL } from "../../utils/constants";
+import { BASE_URL, LOGIN_URL, ADMIN_LOGIN_URL } from "../../utils/constants";
 import Header from "../layout/Header";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -9,6 +9,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
 
@@ -16,8 +17,9 @@ function Login() {
     e.preventDefault();
 
     try {
+      const loginUrl = isAdmin ? ADMIN_LOGIN_URL : LOGIN_URL;
       const response = await axios.post(
-        `${BASE_URL}${LOGIN_URL}`,
+        `${BASE_URL}${loginUrl}`,
         {
           email,
           password,
@@ -30,8 +32,20 @@ function Login() {
         }
       );
       toast.success(response.data.message);
-      localStorage.setItem("user", JSON.stringify(response.data));
-      navigate("/");
+      
+      // Store user data with role information
+      const userData = {
+        ...response.data,
+        role: isAdmin ? 'admin' : 'user'
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
+      
+      // Navigate based on role
+      if (isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       if (error?.response?.data?.error) {
         setErrorMessage(error?.response?.data?.error || "Login failed!!!");
@@ -50,8 +64,36 @@ function Login() {
               Welcome to <span className="text-orange-500">CourseHive</span>
             </h2>
             <p className="text-center text-gray-400 mb-6">
-              Start Learning – Log in to your account
+              {isAdmin ? "Instructor Login" : "Student Login"}
             </p>
+
+            {/* Role Toggle */}
+            <div className="mb-6">
+              <div className="flex bg-gray-800 rounded-lg p-1">
+                <button
+                  type="button"
+                  onClick={() => setIsAdmin(false)}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                    !isAdmin
+                      ? "bg-orange-500 text-white"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  Student
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAdmin(true)}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                    isAdmin
+                      ? "bg-orange-500 text-white"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  Instructor
+                </button>
+              </div>
+            </div>
 
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
@@ -94,9 +136,21 @@ function Login() {
                 type="submit"
                 className="w-full bg-orange-500 hover:bg-blue-600 text-white py-3 px-6 rounded-md transition cursor-pointer"
               >
-                Login
+                {isAdmin ? "Login as Instructor" : "Login"}
               </button>
             </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-gray-400 text-sm">
+                Don't have an account? {" "}
+                <a
+                  href="/signup"
+                  className="text-orange-500 hover:text-orange-400"
+                >
+                  Sign up
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </div>

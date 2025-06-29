@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { BASE_URL, SIGNUP_URL } from "../../utils/constants";
+import { BASE_URL, SIGNUP_URL, ADMIN_SIGNUP_URL } from "../../utils/constants";
 import Header from "../layout/Header";
 import toast from "react-hot-toast";
 
@@ -11,6 +11,7 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
 
@@ -18,8 +19,9 @@ function Signup() {
     e.preventDefault();
 
     try {
+      const signupUrl = isAdmin ? ADMIN_SIGNUP_URL : SIGNUP_URL;
       const response = await axios.post(
-        `${BASE_URL}${SIGNUP_URL}`,
+        `${BASE_URL}${signupUrl}`,
         {
           firstName,
           lastName,
@@ -53,8 +55,36 @@ function Signup() {
               Welcome to <span className="text-orange-500">CourseHive</span>
             </h2>
             <p className="text-center text-gray-400 mb-6">
-              Just Signup To Join Us!
+              {isAdmin ? "Join as Instructor" : "Join as Student"}
             </p>
+
+            {/* Role Toggle */}
+            <div className="mb-6">
+              <div className="flex bg-gray-800 rounded-lg p-1">
+                <button
+                  type="button"
+                  onClick={() => setIsAdmin(false)}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                    !isAdmin
+                      ? "bg-orange-500 text-white"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  Student
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAdmin(true)}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                    isAdmin
+                      ? "bg-orange-500 text-white"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  Instructor
+                </button>
+              </div>
+            </div>
 
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
@@ -68,6 +98,7 @@ function Signup() {
                   onChange={(e) => setFirstName(e.target.value)}
                   className="w-full p-3 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter your firstname"
+                  required
                 />
               </div>
 
@@ -126,9 +157,21 @@ function Signup() {
                 type="submit"
                 className="w-full bg-orange-500 hover:bg-blue-600 text-white py-3 px-6 rounded-md transition cursor-pointer"
               >
-                Signup
+                {isAdmin ? "Sign up as Instructor" : "Sign up"}
               </button>
             </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-gray-400 text-sm">
+                Already have an account? {" "}
+                <a
+                  href="/login"
+                  className="text-orange-500 hover:text-orange-400"
+                >
+                  Login
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </div>

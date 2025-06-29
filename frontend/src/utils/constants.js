@@ -10,3 +10,8 @@ export const GET_CLIENT_SECRET_URL = "/api/v1/course/purchase/client-secret";
 export const SIGNUP_URL = "/api/v1/user/signup";
 export const LOGIN_URL = "/api/v1/user/login";
 export const LOGOUT_URL = "/api/v1/user/logout";
+
+// Admin endpoints
+export const ADMIN_SIGNUP_URL = "/api/v1/admin/signup";
+export const ADMIN_LOGIN_URL = "/api/v1/admin/login";
+export const ADMIN_LOGOUT_URL = "/api/v1/admin/logout";

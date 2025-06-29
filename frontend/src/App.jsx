@@ -8,6 +8,7 @@ import AllCourses from "./components/courses/AllCourses";
 import CoursePurchase from "./components/courses/CoursePurchase";
 import MyCourses from "./components/courses/MyCourses";
 import CourseDetail from "./components/courses/CourseDetail";
+import AdminDashboard from "./components/admin/AdminDashboard";
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
         <Route path="/purchase/:courseId" element={<CoursePurchase />} />
         <Route path="/my-courses" element={<MyCourses />} />
         <Route path="/courses/:courseId" element={<CourseDetail />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
       <Toaster />
     </div>
