@@ -1,4 +1,5 @@
 import { Course } from "../models/course.model.js";
+import { CourseDetail } from "../models/courseDetail.model.js";
 import { Purchase } from "../models/purchase.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import Stripe from "stripe";
@@ -22,7 +23,17 @@ export const getCourse = async (req, res) => {
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
     }
-    res.status(200).json({ course });
+
+    // Get course details if they exist
+    const courseDetails = await CourseDetail.findOne({ courseId })
+      .sort({ "contentSections.order": 1 });
+
+    const response = {
+      course,
+      courseDetails: courseDetails || null,
+    };
+
+    res.status(200).json(response);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Error getting course" });
@@ -119,6 +130,10 @@ export const deleteCourse = async (req, res) => {
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
     }
+
+    // Also delete associated course details
+    await CourseDetail.findOneAndDelete({ courseId });
+
     res.status(200).json({ message: "Course deleted successfully", course });
   } catch (err) {
     console.log(err);
