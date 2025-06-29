@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Home from "./components/user/Home";
 import Login from "./components/authentication/Login";
 import Signup from "./components/authentication/Signup";
@@ -11,21 +11,120 @@ import CourseDetail from "./components/courses/CourseDetail";
 import AdminDashboard from "./components/admin/AdminDashboard";
 
 function App() {
+  // Check authentication status
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const admin = JSON.parse(localStorage.getItem("admin") || "null");
+  
+  const isUserAuthenticated = !!user;
+  const isAdminAuthenticated = !!admin;
+  const isAuthenticated = isUserAuthenticated || isAdminAuthenticated;
+
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Home />} />
+        {/* Public routes - redirect if authenticated */}
+        <Route 
+          path="/login" 
+          element={
+            isAuthenticated ? (
+              isAdminAuthenticated ? <Navigate to="/admin" replace /> : <Navigate to="/" replace />
+            ) : (
+              <Login />
+            )
+          } 
+        />
+        <Route 
+          path="/signup" 
+          element={
+            isAuthenticated ? (
+              isAdminAuthenticated ? <Navigate to="/admin" replace /> : <Navigate to="/" replace />
+            ) : (
+              <Signup />
+            )
+          } 
+        />
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        {/* User-only routes */}
+        <Route 
+          path="/" 
+          element={
+            isAdminAuthenticated ? (
+              <Navigate to="/admin" replace />
+            ) : (
+              <Home />
+            )
+          } 
+        />
+        <Route 
+          path="/courses" 
+          element={
+            isAdminAuthenticated ? (
+              <Navigate to="/admin" replace />
+            ) : (
+              <AllCourses />
+            )
+          } 
+        />
+        <Route 
+          path="/purchase/:courseId" 
+          element={
+            isAdminAuthenticated ? (
+              <Navigate to="/admin" replace />
+            ) : !isUserAuthenticated ? (
+              <Navigate to="/login" replace />
+            ) : (
+              <CoursePurchase />
+            )
+          } 
+        />
+        <Route 
+          path="/my-courses" 
+          element={
+            isAdminAuthenticated ? (
+              <Navigate to="/admin" replace />
+            ) : !isUserAuthenticated ? (
+              <Navigate to="/login" replace />
+            ) : (
+              <MyCourses />
+            )
+          } 
+        />
+        <Route 
+          path="/courses/:courseId" 
+          element={
+            isAdminAuthenticated ? (
+              <Navigate to="/admin" replace />
+            ) : !isUserAuthenticated ? (
+              <Navigate to="/login" replace />
+            ) : (
+              <CourseDetail />
+            )
+          } 
+        />
 
-        <Route path="/courses" element={<AllCourses />} />
-        <Route path="/purchase/:courseId" element={<CoursePurchase />} />
-        <Route path="/my-courses" element={<MyCourses />} />
-        <Route path="/courses/:courseId" element={<CourseDetail />} />
+        {/* Admin-only routes */}
+        <Route 
+          path="/admin" 
+          element={
+            !isAdminAuthenticated ? (
+              <Navigate to="/login" replace />
+            ) : (
+              <AdminDashboard />
+            )
+          } 
+        />
 
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminDashboard />} />
+        {/* Catch all route - redirect to appropriate dashboard */}
+        <Route 
+          path="*" 
+          element={
+            isAuthenticated ? (
+              isAdminAuthenticated ? <Navigate to="/admin" replace /> : <Navigate to="/" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          } 
+        />
       </Routes>
       <Toaster />
     </div>

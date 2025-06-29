@@ -33,17 +33,12 @@ function Login() {
       );
       toast.success(response.data.message);
       
-      // Store user data with role information
-      const userData = {
-        ...response.data,
-        role: isAdmin ? 'admin' : 'user'
-      };
-      localStorage.setItem("user", JSON.stringify(userData));
-      
       // Navigate based on role
       if (isAdmin) {
+        localStorage.setItem("admin", JSON.stringify(response.data));
         navigate("/admin");
       } else {
+        localStorage.setItem("user", JSON.stringify(response.data));
         navigate("/");
       }
     } catch (error) {
