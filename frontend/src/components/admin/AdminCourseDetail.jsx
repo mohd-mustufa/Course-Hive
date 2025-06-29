@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL, GET_COURSE_URL } from "../../utils/constants";
 import toast from "react-hot-toast";
+import Accordion from "../common/Accordion";
 
 function AdminCourseDetail() {
   const [course, setCourse] = useState(null);
@@ -145,26 +146,10 @@ function AdminCourseDetail() {
                         </span>
                       </div>
                       
-                      <div className="space-y-4">
-                        {courseDetails.contentSections.map((section, index) => (
-                          <div key={section._id || index} className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="flex items-center">
-                                <div className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4">
-                                  {index + 1}
-                                </div>
-                                <h3 className="text-xl font-semibold text-orange-400">
-                                  {section.heading}
-                                </h3>
-                              </div>
-                              <span className="text-gray-400 text-sm">Section {index + 1}</span>
-                            </div>
-                            <div className="text-gray-300 leading-relaxed whitespace-pre-wrap ml-12">
-                              {section.content}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      <Accordion 
+                        sections={courseDetails.contentSections} 
+                        title="Course Content"
+                      />
                     </div>
                   ) : (
                     <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">

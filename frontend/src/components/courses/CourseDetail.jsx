@@ -4,6 +4,7 @@ import axios from "axios";
 import { BASE_URL, GET_COURSE_URL } from "../../utils/constants";
 import toast from "react-hot-toast";
 import Header from "../layout/Header";
+import Accordion from "../common/Accordion";
 
 function CourseDetail() {
   const [course, setCourse] = useState(null);
@@ -112,25 +113,10 @@ function CourseDetail() {
                   {courseDetails && courseDetails.contentSections && courseDetails.contentSections.length > 0 ? (
                     <div>
                       <h2 className="text-2xl font-bold text-white mb-6">What You'll Learn</h2>
-                      <div className="space-y-4">
-                        {courseDetails.contentSections.map((section, index) => (
-                          <div key={section._id || index} className="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-orange-500 transition-colors">
-                            <div className="flex items-start">
-                              <div className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">
-                                {index + 1}
-                              </div>
-                              <div className="flex-1">
-                                <h3 className="text-xl font-semibold text-orange-400 mb-3">
-                                  {section.heading}
-                                </h3>
-                                <div className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                                  {section.content}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      <Accordion 
+                        sections={courseDetails.contentSections} 
+                        title="Course Content"
+                      />
                     </div>
                   ) : (
                     <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
