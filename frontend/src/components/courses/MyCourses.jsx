@@ -16,6 +16,7 @@ function MyCourses() {
     if (!user?.token) {
       setIsLoggedIn(false);
       setLoading(false);
+      toast.error("You must be logged in to view your courses.");
       return;
     }
     setIsLoggedIn(true);
