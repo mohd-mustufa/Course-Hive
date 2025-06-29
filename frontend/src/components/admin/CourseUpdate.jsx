@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { BASE_URL, GET_COURSE_URL, UPDATE_COURSE_URL } from "../../utils/constants";
+import { BASE_URL, GET_COURSE_URL, UPDATE_COURSE_URL, CREATE_COURSE_DETAILS_URL, UPDATE_COURSE_DETAILS_URL } from "../../utils/constants";
 import toast from "react-hot-toast";
 
 function CourseUpdate() {
@@ -10,8 +10,12 @@ function CourseUpdate() {
     description: "",
     price: "",
   });
+  const [contentSections, setContentSections] = useState([
+    { heading: "", content: "" }
+  ]);
   const [loading, setLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState(null);
+  const [hasExistingDetails, setHasExistingDetails] = useState(false);
   const navigate = useNavigate();
   const { courseId } = useParams();
   const admin = JSON.parse(localStorage.getItem("admin"));
@@ -34,6 +38,8 @@ function CourseUpdate() {
       });
       
       const course = response.data.course;
+      const courseDetails = response.data.courseDetails;
+      
       setFormData({
         title: course.title || "",
         description: course.description || "",
@@ -42,6 +48,15 @@ function CourseUpdate() {
       
       if (course.image?.url) {
         setCurrentImage(course.image.url);
+      }
+
+      // Set content sections if they exist
+      if (courseDetails && courseDetails.contentSections && courseDetails.contentSections.length > 0) {
+        setContentSections(courseDetails.contentSections);
+        setHasExistingDetails(true);
+      } else {
+        setContentSections([{ heading: "", content: "" }]);
+        setHasExistingDetails(false);
       }
     } catch (error) {
       console.error("Error fetching course:", error);
@@ -59,14 +74,35 @@ function CourseUpdate() {
     }));
   };
 
+  const handleSectionChange = (index, field, value) => {
+    const updatedSections = [...contentSections];
+    updatedSections[index][field] = value;
+    setContentSections(updatedSections);
+  };
+
+  const addSection = () => {
+    setContentSections([...contentSections, { heading: "", content: "" }]);
+  };
+
+  const removeSection = (index) => {
+    if (contentSections.length > 1) {
+      const updatedSections = contentSections.filter((_, i) => i !== index);
+      setContentSections(updatedSections);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData)
     
     if (!admin?.token) {
       toast.error("Please login to update a course");
       return;
     }
+
+    // Filter out empty sections (sections are optional)
+    const validSections = contentSections.filter(section => 
+      section.heading.trim() && section.content.trim()
+    );
 
     try {
       setLoading(true);
@@ -76,13 +112,40 @@ function CourseUpdate() {
       formDataToSend.append("description", formData.description);
       formDataToSend.append("price", formData.price);
 
-      const response = await axios.put(`${BASE_URL}${UPDATE_COURSE_URL}${courseId}`, formDataToSend, {
+      await axios.put(`${BASE_URL}${UPDATE_COURSE_URL}${courseId}`, formDataToSend, {
         headers: {
           Authorization: `Bearer ${admin.token}`,
           "Content-Type": "multipart/form-data",
         },
         withCredentials: true,
       });
+
+      // Handle course details update/create
+      if (validSections.length > 0) {
+        if (hasExistingDetails) {
+          // Update existing course details
+          await axios.put(`${BASE_URL}${UPDATE_COURSE_DETAILS_URL}${courseId}`, {
+            contentSections: validSections
+          }, {
+            headers: {
+              Authorization: `Bearer ${admin.token}`,
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          });
+        } else {
+          // Create new course details
+          await axios.post(`${BASE_URL}${CREATE_COURSE_DETAILS_URL}${courseId}`, {
+            contentSections: validSections
+          }, {
+            headers: {
+              Authorization: `Bearer ${admin.token}`,
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          });
+        }
+      }
 
       toast.success("Course updated successfully!");
       navigate("/admin");
@@ -127,7 +190,7 @@ function CourseUpdate() {
           </div>
 
           {/* Form */}
-          <div className="bg-gray-900 rounded-lg p-6 max-w-2xl mx-auto">
+          <div className="bg-gray-900 rounded-lg p-6 max-w-4xl mx-auto">
             {/* Course Image Display */}
             {currentImage && (
               <div className="mb-8 text-center">
@@ -140,20 +203,41 @@ function CourseUpdate() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Title */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Course Title *
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
-                  placeholder="Enter course title"
-                />
+              {/* Basic Course Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Title */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Course Title *
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
+                    placeholder="Enter course title"
+                  />
+                </div>
+
+                {/* Price */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Price ($) *
+                  </label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    required
+                    min="0"
+                    step="0.01"
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
+                    placeholder="0.00"
+                  />
+                </div>
               </div>
 
               {/* Description */}
@@ -172,22 +256,59 @@ function CourseUpdate() {
                 />
               </div>
 
-              {/* Price */}
+              {/* Content Sections (Optional) */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Price ($) *
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  required
-                  min="0"
-                  step="0.01"
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
-                  placeholder="0.00"
-                />
+                <div className="flex justify-between items-center mb-4">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Content Sections (Optional)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={addSection}
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-sm cursor-pointer"
+                  >
+                    + Add Section
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  {contentSections.map((section, index) => (
+                    <div key={index} className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                      <div className="flex justify-between items-center mb-3">
+                        <h4 className="text-white font-medium">Section {index + 1}</h4>
+                        {contentSections.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeSection(index)}
+                            className="text-red-400 hover:text-red-300 text-sm cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <input
+                          type="text"
+                          value={section.heading}
+                          onChange={(e) => handleSectionChange(index, "heading", e.target.value)}
+                          placeholder="Section heading"
+                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
+                        />
+                        <textarea
+                          value={section.content}
+                          onChange={(e) => handleSectionChange(index, "content", e.target.value)}
+                          placeholder="Section content (you can use markdown)"
+                          rows="4"
+                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-gray-400 text-sm mt-2">
+                  Content sections help structure your course. Feel free to add them as you build your course.
+                </p>
               </div>
 
               {/* Submit Button */}

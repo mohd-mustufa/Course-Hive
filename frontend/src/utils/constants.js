@@ -7,6 +7,10 @@ export const CREATE_ORDER_URL = "/api/v1/order";
 export const GET_MY_COURSES_URL = "/api/v1/user/purchases";
 export const GET_CLIENT_SECRET_URL = "/api/v1/course/purchase/client-secret";
 
+// Course Details endpoints
+export const CREATE_COURSE_DETAILS_URL = "/api/v1/course-details/";
+export const UPDATE_COURSE_DETAILS_URL = "/api/v1/course-details/";
+
 export const SIGNUP_URL = "/api/v1/user/signup";
 export const LOGIN_URL = "/api/v1/user/login";
 export const LOGOUT_URL = "/api/v1/user/logout";

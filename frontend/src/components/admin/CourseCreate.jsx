@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { BASE_URL, CREATE_COURSE_URL } from "../../utils/constants";
+import { BASE_URL, CREATE_COURSE_URL, CREATE_COURSE_DETAILS_URL } from "../../utils/constants";
 import toast from "react-hot-toast";
 
 function CourseCreate() {
@@ -11,6 +11,9 @@ function CourseCreate() {
     price: "",
     image: null,
   });
+  const [contentSections, setContentSections] = useState([
+    { heading: "", content: "" }
+  ]);
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const navigate = useNavigate();
@@ -41,6 +44,23 @@ function CourseCreate() {
     }
   };
 
+  const handleSectionChange = (index, field, value) => {
+    const updatedSections = [...contentSections];
+    updatedSections[index][field] = value;
+    setContentSections(updatedSections);
+  };
+
+  const addSection = () => {
+    setContentSections([...contentSections, { heading: "", content: "" }]);
+  };
+
+  const removeSection = (index) => {
+    if (contentSections.length > 1) {
+      const updatedSections = contentSections.filter((_, i) => i !== index);
+      setContentSections(updatedSections);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -49,9 +69,15 @@ function CourseCreate() {
       return;
     }
 
+    // Validate content sections
+    const validSections = contentSections.filter(section => 
+      section.heading.trim() && section.content.trim()
+    );
+
     try {
       setLoading(true);
       
+      // First create the course
       const formDataToSend = new FormData();
       formDataToSend.append("title", formData.title);
       formDataToSend.append("description", formData.description);
@@ -61,13 +87,27 @@ function CourseCreate() {
         formDataToSend.append("image", formData.image);
       }
 
-      const response = await axios.post(`${BASE_URL}${CREATE_COURSE_URL}`, formDataToSend, {
+      const courseResponse = await axios.post(`${BASE_URL}${CREATE_COURSE_URL}`, formDataToSend, {
         headers: {
           Authorization: `Bearer ${admin.token}`,
           "Content-Type": "multipart/form-data",
         },
         withCredentials: true,
       });
+      const courseId = courseResponse.data.course._id;
+
+      // Then create course details with content sections (only if sections exist)
+      if (validSections.length > 0) {
+        await axios.post(`${BASE_URL}${CREATE_COURSE_DETAILS_URL}${courseId}`, {
+          contentSections: validSections
+        }, {
+          headers: {
+            Authorization: `Bearer ${admin.token}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+      }
 
       toast.success("Course created successfully!");
       navigate("/admin");
@@ -102,22 +142,43 @@ function CourseCreate() {
           </div>
 
           {/* Form */}
-          <div className="bg-gray-900 rounded-lg p-6 max-w-2xl mx-auto">
+          <div className="bg-gray-900 rounded-lg p-6 max-w-4xl mx-auto">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Title */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Course Title *
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
-                  placeholder="Enter course title"
-                />
+              {/* Basic Course Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Title */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Course Title *
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
+                    placeholder="Enter course title"
+                  />
+                </div>
+
+                {/* Price */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Price ($) *
+                  </label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    required
+                    min="0"
+                    step="0.01"
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
+                    placeholder="0.00"
+                  />
+                </div>
               </div>
 
               {/* Description */}
@@ -133,24 +194,6 @@ function CourseCreate() {
                   rows="4"
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
                   placeholder="Enter course description"
-                />
-              </div>
-
-              {/* Price */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Price ($) *
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  required
-                  min="0"
-                  step="0.01"
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
-                  placeholder="0.00"
                 />
               </div>
 
@@ -174,6 +217,61 @@ function CourseCreate() {
                     />
                   </div>
                 )}
+              </div>
+
+              {/* Content Sections (Optional) */}
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Content Sections (Optional)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={addSection}
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-sm"
+                  >
+                    + Add Section
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  {contentSections.map((section, index) => (
+                    <div key={index} className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                      <div className="flex justify-between items-center mb-3">
+                        <h4 className="text-white font-medium">Section {index + 1}</h4>
+                        {contentSections.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeSection(index)}
+                            className="text-red-400 hover:text-red-300 text-sm"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <input
+                          type="text"
+                          value={section.heading}
+                          onChange={(e) => handleSectionChange(index, "heading", e.target.value)}
+                          placeholder="Section Title"
+                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
+                        />
+                        <textarea
+                          value={section.content}
+                          onChange={(e) => handleSectionChange(index, "content", e.target.value)}
+                          placeholder="Section content"
+                          rows="4"
+                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-gray-400 text-sm mt-2">
+                  Content sections are not required at this stage. They can be added later.
+                </p>
               </div>
 
               {/* Submit Button */}
