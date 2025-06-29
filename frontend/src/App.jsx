@@ -9,6 +9,9 @@ import CoursePurchase from "./components/courses/CoursePurchase";
 import MyCourses from "./components/courses/MyCourses";
 import CourseDetail from "./components/courses/CourseDetail";
 import AdminDashboard from "./components/admin/AdminDashboard";
+import AdminCourseDetail from "./components/admin/AdminCourseDetail";
+import CourseUpdate from "./components/admin/CourseUpdate";
+import CourseCreate from "./components/admin/CourseCreate";
 
 function App() {
   // Check authentication status
@@ -110,6 +113,36 @@ function App() {
               <Navigate to="/login" replace />
             ) : (
               <AdminDashboard />
+            )
+          } 
+        />
+        <Route 
+          path="/admin/course/create" 
+          element={
+            !isAdminAuthenticated ? (
+              <Navigate to="/login" replace />
+            ) : (
+              <CourseCreate />
+            )
+          } 
+        />
+        <Route 
+          path="/admin/course/:courseId" 
+          element={
+            !isAdminAuthenticated ? (
+              <Navigate to="/login" replace />
+            ) : (
+              <AdminCourseDetail />
+            )
+          } 
+        />
+        <Route 
+          path="/admin/course/update/:courseId" 
+          element={
+            !isAdminAuthenticated ? (
+              <Navigate to="/login" replace />
+            ) : (
+              <CourseUpdate />
             )
           } 
         />

@@ -15,3 +15,9 @@ export const LOGOUT_URL = "/api/v1/user/logout";
 export const ADMIN_SIGNUP_URL = "/api/v1/admin/signup";
 export const ADMIN_LOGIN_URL = "/api/v1/admin/login";
 export const ADMIN_LOGOUT_URL = "/api/v1/admin/logout";
+
+export const GET_ADMIN_COURSES_URL = "/api/v1/admin/courses";
+export const GET_ADMIN_STATS_URL = "/api/v1/admin/stats";
+export const CREATE_COURSE_URL = "/api/v1/course/";
+export const UPDATE_COURSE_URL = "/api/v1/course/";
+export const DELETE_COURSE_URL = "/api/v1/course/";
