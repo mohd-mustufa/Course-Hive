@@ -174,6 +174,7 @@ function AdminDashboard() {
           </div>
         </div>
       </div>
+      {/* TODO: Fix footer and add on all admin pages */}
       <Footer />
     </div>
   );

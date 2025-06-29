@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL, CREATE_COURSE_URL, CREATE_COURSE_DETAILS_URL } from "../../utils/constants";
 import toast from "react-hot-toast";
+import AIContentGenerator from "./AIContentGenerator";
 
 function CourseCreate() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,8 @@ function CourseCreate() {
   ]);
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const navigate = useNavigate();
   const admin = JSON.parse(localStorage.getItem("admin"));
 
@@ -117,6 +120,18 @@ function CourseCreate() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAIContentGenerated = (content) => {
+    const updatedSections = [...contentSections];
+    updatedSections[currentSectionIndex].content = content;
+    setContentSections(updatedSections);
+    toast.success("AI content added successfully!");
+  };
+
+  const openAIGenerator = (sectionIndex) => {
+    setCurrentSectionIndex(sectionIndex);
+    setAiGeneratorOpen(true);
   };
 
   return (
@@ -228,7 +243,7 @@ function CourseCreate() {
                   <button
                     type="button"
                     onClick={addSection}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-sm"
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-sm cursor-pointer"
                   >
                     + Add Section
                   </button>
@@ -243,7 +258,7 @@ function CourseCreate() {
                           <button
                             type="button"
                             onClick={() => removeSection(index)}
-                            className="text-red-400 hover:text-red-300 text-sm"
+                            className="text-red-400 hover:text-red-300 text-sm cursor-pointer"
                           >
                             Remove
                           </button>
@@ -258,13 +273,27 @@ function CourseCreate() {
                           placeholder="Section Title"
                           className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
                         />
-                        <textarea
-                          value={section.content}
-                          onChange={(e) => handleSectionChange(index, "content", e.target.value)}
-                          placeholder="Section content"
-                          rows="4"
-                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
-                        />
+                        <div className="relative">
+                          <textarea
+                            value={section.content}
+                            onChange={(e) => handleSectionChange(index, "content", e.target.value)}
+                            placeholder="Section content"
+                            rows="4"
+                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-orange-500 text-white"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => openAIGenerator(index)}
+                            className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-3 py-1 rounded text-xs font-medium transition-all transform hover:scale-105 cursor-pointer"
+                          >
+                            <div className="flex items-center space-x-1">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              </svg>
+                              <span>AI Generate</span>
+                            </div>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -295,6 +324,15 @@ function CourseCreate() {
           </div>
         </div>
       </div>
+
+      <AIContentGenerator
+        isOpen={aiGeneratorOpen}
+        sectionHeading={contentSections[currentSectionIndex]?.heading || ""}
+        courseTitle={formData.title || ""}
+        courseContext={formData.description || ""}
+        onContentGenerated={handleAIContentGenerated}
+        onClose={() => setAiGeneratorOpen(false)}
+      />
     </div>
   );
 }
