@@ -32,6 +32,7 @@ function CoursePurchase() {
 
   useEffect(() => {
     if (!token) {
+      toast.error("Please login to purchase this course");
       navigate("/login");
       return;
     }
