@@ -10,8 +10,8 @@ import MyCourses from "./components/courses/MyCourses";
 import CourseDetail from "./components/courses/CourseDetail";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AdminCourseDetail from "./components/admin/AdminCourseDetail";
-import CourseUpdate from "./components/admin/CourseUpdate";
-import CourseCreate from "./components/admin/CourseCreate";
+import CourseUpdate from "./components/courses/CourseUpdate";
+import CourseCreate from "./components/courses/CourseCreate";
 
 function App() {
   // Check authentication status

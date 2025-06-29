@@ -6,9 +6,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 
 // Adding publishable key - safe to be exposed
-const stripePromise = loadStripe(
-  "pk_test_51RezeSFTEumaF2fNZXiaiKTCgNGaGUXRPWIIJsRxj3UkLmjAswA0sONkA0lHvre9GQIW2RBY7eNXGIOWKZu7qqnA00Qzk2Eicm"
-);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 createRoot(document.getElementById("root")).render(
   <Elements stripe={stripePromise}>
     <BrowserRouter>
