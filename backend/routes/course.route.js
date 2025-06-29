@@ -19,6 +19,7 @@ router.get("/:courseId", getCourse);
 router.put("/:courseId", adminMiddleware, updateCourse);
 router.delete("/:courseId", adminMiddleware, deleteCourse);
 
+// purchase routes
 router.post("/purchase", userMiddleware, purchaseCourse);
 router.post("/purchase/client-secret", userMiddleware, getClientSecret);
 

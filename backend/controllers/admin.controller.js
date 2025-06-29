@@ -1,4 +1,6 @@
 import { Admin } from "../models/admin.model.js";
+import { Course } from "../models/course.model.js";
+import { Purchase } from "../models/purchase.model.js";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import jwt from "jsonwebtoken";
@@ -95,5 +97,56 @@ export const logout = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Error occurred during logout" });
+  }
+};
+
+export const getAdminCourses = async (req, res) => {
+  const adminId = req.adminId;
+
+  try {
+    const courses = await Course.find({ creatorId: adminId });
+    res.status(200).json({ courses });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Error fetching course" });
+  }
+};
+
+export const getAdminStats = async (req, res) => {
+  const adminId = req.adminId;
+
+  try {
+    // Get all courses by this admin
+    const courses = await Course.find({ creatorId: adminId });
+    const totalCourses = courses.length;
+
+    // Get all purchases for these courses
+    const courseIds = courses.map(course => course._id);
+    const purchases = await Purchase.find({ courseId: { $in: courseIds } });
+    
+    const totalCoursesSold = purchases.length;
+    
+    // Get unique students (users who bought any course from this admin)
+    const uniqueStudentIds = [...new Set(purchases.map(purchase => purchase.userId.toString()))];
+    const uniqueStudents = uniqueStudentIds.length;
+
+    // Calculate total revenue
+    let totalRevenue = 0;
+    for (const purchase of purchases) {
+      const course = courses.find(c => c._id.toString() === purchase.courseId.toString());
+      if (course) {
+        totalRevenue += course.price;
+      }
+    }
+
+    res.status(200).json({
+      totalCourses,
+      totalCoursesSold,
+      uniqueStudents,
+      totalRevenue
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Error fetching admin stats" });
   }
 };
