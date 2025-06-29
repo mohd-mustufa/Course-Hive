@@ -9,22 +9,15 @@ function AdminCourseDetail() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { courseId } = useParams();
-  const admin = JSON.parse(localStorage.getItem("admin"));
 
   useEffect(() => {
     fetchCourse();
   }, [courseId]);
 
   const fetchCourse = async () => {
-    if (!admin?.token) {
-      return;
-    }
     try {
       setLoading(true);
       const response = await axios.get(`${BASE_URL}${GET_COURSE_URL}${courseId}`, {
-        headers: {
-          Authorization: `Bearer ${admin.token}`,
-        },
         withCredentials: true,
       });
       setCourse(response.data.course);
